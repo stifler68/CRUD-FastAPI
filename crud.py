@@ -77,3 +77,4 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 # find a better way to add and update the data in db
+
