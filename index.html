@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Update user</h2>
+      <p>Name :</p>
+      <input type="text" id="name" />
+      <p>Email :</p>
+      <input type="text" id="email" />
+      <p>password :</p>
+      <input type="text" id="password" />
+      <button onclick="update()">Update</button>
+    </div>
+    <script>
+      let id = 3;
+      fetch("http://127.0.0.1:8000/users/" + id)
+        .then((res) => {
+          let val = res.json();
+          // console.log(a);
+          return val;
+        })
+        .then((data) => {
+          document.getElementById("name").value = data.name;
+          document.getElementById("email").value = data.email;
+          document.getElementById("password").value = data.password;
+        });
+
+      function update() {
+        fetch("http://127.0.0.1:8000/users/" + id, {
+          method: "put",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            alert(data);
+          });
+      }
+    </script>
+  </body>
+</html>
