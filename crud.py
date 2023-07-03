@@ -76,4 +76,16 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-# find a better way to add and update the data in db
+# ------------------------- BOOKS --------------------------
+
+
+def get_all_Books(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Book).offset(skip).limit(limit).all()
+
+
+def add_user_book(db: Session, book: schemas.BookCreate, user_id: int):
+    db_book = models.Book(**book.dict(), id=user_id)
+    db.add(db_book)
+    db.commit()
+    db.refresh((db_book))
+    return db_book

@@ -2,11 +2,21 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
+# class Book_To_Get_User(BaseModel):
+#     book_id: int
+#     title: str
+#     author: str
+
+#     class Config:
+#         orm_mode = True
+
+
 class User(BaseModel):
     id: int
     name: str
     email: EmailStr
     password: str
+    # book: Book_To_Get_User
 
     class Config:
         orm_mode = True
@@ -30,5 +40,31 @@ class UserUpdate(BaseModel):
         orm_mode = True
 
 
-# what if i want to update a single field only
-# query and path parameters difference
+# ---------- BOOKS ----------------
+
+
+class User_To_Get_Book(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+
+    class Config:
+        orm_mode = True
+
+
+class Book(BaseModel):
+    book_id: int
+    title: str
+    author: str
+    user: User_To_Get_Book
+
+    class Config:
+        orm_mode = True
+
+
+class BookCreate(BaseModel):
+    title: str
+    author: str
+
+    class Config:
+        orm_mode = True

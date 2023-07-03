@@ -79,3 +79,19 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+
+# ----------- Books ----------------
+
+
+@app.get("/books", response_model=list[schemas.Book])
+def get_all_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    book = crud.get_all_Books(db, skip=skip, limit=limit)
+    return book
+
+
+@app.post("/users/{user_id}/books", response_model=schemas.BookCreate)
+def add_book_for_user(
+    user_id: int, book: schemas.BookCreate, db: Session = Depends(get_db)
+):
+    return crud.add_user_book(db=db, book=book, user_id=user_id)
