@@ -63,6 +63,7 @@ class Book(BaseModel):
 
 
 class BookCreate(BaseModel):
+    id: int
     title: str
     author: str
 

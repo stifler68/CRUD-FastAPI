@@ -9,11 +9,34 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # try push
 def get_user_by_id(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    book_list = db.query(models.Book).filter(models.Book.id == user_id).all()
+    user_data = {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "password": user.password,
+        "books": book_list,
+    }
+    return user_data
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+    user_list = db.query(models.User).offset(skip).limit(limit).all()
+    user_res_list = []
+    for user in user_list:
+        user_res_list.append(
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "books": [],
+            }
+        )
+        book_list = db.query(models.Book).filter(models.Book.id == user.id).all()
+        user_res_list[-1]["books"] = book_list
+
+    return user_res_list
 
 
 def get_user_by_email(db: Session, email: str):
@@ -84,8 +107,16 @@ def get_all_Books(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Book).offset(skip).limit(limit).all()
 
 
-def add_user_book(db: Session, book: schemas.BookCreate, user_id: int):
-    db_book = models.Book(**book.dict(), id=user_id)
+def get_book_by_Id(db: Session, book_id: int):
+    return db.query(models.Book).filter(models.Book.book_id == book_id).first()
+
+
+def get_book_user_ID(db: Session, book_id: int):
+    return db.query(models.Book).filter(models.Book.id == book_id).all()
+
+
+def add_user_book(db: Session, book: schemas.BookCreate):
+    db_book = models.Book(**book.dict())
     db.add(db_book)
     db.commit()
     db.refresh((db_book))

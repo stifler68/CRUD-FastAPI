@@ -35,13 +35,17 @@ def get_db():
         db.close()
 
 
-@app.get("/users", response_model=list[schemas.User])
+@app.get("/users")
 def get_all_user(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
+
+    # for i in users:
+    #     print("userid:- ", i.id)
+
     return users
 
 
-@app.get("/users/{user_id}", response_model=schemas.User)
+@app.get("/users/{user_id}")
 def get_user_by_ID(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
@@ -84,14 +88,31 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 # ----------- Books ----------------
 
 
+# Get All Books
 @app.get("/books", response_model=list[schemas.Book])
 def get_all_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     book = crud.get_all_Books(db, skip=skip, limit=limit)
     return book
 
 
-@app.post("/users/{user_id}/books", response_model=schemas.BookCreate)
-def add_book_for_user(
-    user_id: int, book: schemas.BookCreate, db: Session = Depends(get_db)
-):
-    return crud.add_user_book(db=db, book=book, user_id=user_id)
+# @app.get("/users/{user_id}", response_model=schemas.User)
+# def get_user_by_ID(user_id: int, db: Session = Depends(get_db)):
+#     db_user = crud.get_user_by_id(db, user_id=user_id)
+#     if db_user is None:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return db_user
+
+
+@app.get("/books/{book_id}", response_model=schemas.Book)
+def get_Book_By_ID(book_id: int, db: Session = Depends(get_db)):
+    db_book = crud.get_book_by_Id(db, book_id=book_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
+    return db_book
+
+
+#  Add book
+@app.post("/books", response_model=schemas.BookCreate)
+def add_book_for_user(book: schemas.BookCreate, db: Session = Depends(get_db)):
+    # print(book.user_id)
+    return crud.add_user_book(db=db, book=book)
