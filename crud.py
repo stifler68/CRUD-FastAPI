@@ -4,6 +4,19 @@ from database import SessionLocal
 import models, schemas
 from passlib.context import CryptContext
 
+
+# Authentication
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from jwt import InvalidTokenError, ExpiredSignatureError
+
+#
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -121,3 +134,42 @@ def add_user_book(db: Session, book: schemas.BookCreate):
     db.commit()
     db.refresh((db_book))
     return db_book
+
+
+#  ------------   Authentication   ------------
+
+
+# Configure JWT setting
+# getting data from .env file
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")
+
+
+# Generate a JWT access token
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    access_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return access_token
+
+
+# Verify the JWT access token
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload["sub"]
+        if username is None:
+            return {"Error": " Username not Found"}
+        return username
+    except JWTError:
+        return {"Error": " Username not Found"}
+
+
+# Hash a password
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
+# Verify a password
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)

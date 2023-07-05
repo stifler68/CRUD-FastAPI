@@ -2,13 +2,9 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
-# class Book_To_Get_User(BaseModel):
-#     book_id: int
-#     title: str
-#     author: str
-
-#     class Config:
-#         orm_mode = True
+class token(BaseModel):
+    username: str
+    password: str
 
 
 class User(BaseModel):
