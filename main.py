@@ -38,7 +38,7 @@ def get_db():
         db.close()
 
 
-@app.get("/users")
+@app.get("/users", response_model=schemas.User)
 def get_all_user(
     skip: int = 0,
     limit: int = 100,
